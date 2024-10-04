@@ -10,12 +10,9 @@ from ..db import getDB
 postRouters = APIRouter(prefix="/api/post", tags=["My Post Routes"])
 
 @postRouters.get("/all", status_code=status.HTTP_200_OK)
-async def allPosts(db:Session = Depends(getDB), userInfo:UserOut = Depends(getUser)):
-    if not userInfo:
-       raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User is not authorized!")
-
+async def allPosts(db:Session = Depends(getDB)):
     try:
-        allPosts = db.query(Post).filter(Post.authorId == userInfo.id).all()
+        allPosts = db.query(Post).limit(2).all()
         return allPosts
         
     except Exception as e:
@@ -42,9 +39,7 @@ async def createPost(newPost:PostBase, db:Session = Depends(getDB), userInfo:Use
 
 @postRouters.delete("/remove", status_code=status.HTTP_204_NO_CONTENT)
 async def deletePost(postId:int = Query(gt=0), db:Session = Depends(getDB), userInfo:UserOut = Depends(getUser)):
-    if not postId:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Please provide the post id!")
-        
+    
     if not userInfo:
        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User is not authorized!")
     

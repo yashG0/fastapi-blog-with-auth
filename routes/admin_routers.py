@@ -7,8 +7,12 @@ from ..schemas import UserOut
 
 adminRoutes = APIRouter(prefix="/api/admin", tags=["My Admin Routes"])
 
+
+def adminRoleCheck(userInfo: UserOut = Depends(getUserInfo)):
+    if userInfo.role is not 'admin':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not an admin")
+    return userInfo
+    
 @adminRoutes.get("/check-admin")
-async def checkAdmin(db:Session = Depends(getDB), userInfo:UserOut = Depends(getUserInfo)):
-    if not userInfo.role == "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not Admin!")
+async def checkAdmin(userInfo: UserOut = Depends(adminRoleCheck)):
     return userInfo

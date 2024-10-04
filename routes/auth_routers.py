@@ -39,7 +39,7 @@ async def login(userForm:OAuth2PasswordRequestForm = Depends(), db:Session = Dep
     isUser = db.query(User).filter(User.username == userForm.username).first()
     
     if isUser is None:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User does'nt exists! please sign-up")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User does'nt exists! please sign-up")
     
     if not decodePasswd(userForm.password, str(isUser.password)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User or password is invalid! please login again")
